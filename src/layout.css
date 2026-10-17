@@ -1,0 +1,151 @@
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.75rem 1.25rem;
+  background: #fff;
+  border-bottom: 1px solid #e3e5e8;
+}
+
+.nav .brand {
+  margin-right: auto;
+}
+
+.nav nav {
+  display: flex;
+  gap: 1.1rem;
+}
+
+.nav nav a {
+  color: #445;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.nav nav a.active {
+  color: #1d4ed8;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 999px;
+  background: #eef1f5;
+  color: #334;
+  white-space: nowrap;
+}
+
+.badge.paid {
+  background: #dcfae6;
+  color: #05603a;
+}
+
+.badge.approved,
+.badge.work_completed {
+  background: #e0eaff;
+  color: #1d4ed8;
+}
+
+.badge.declined_again,
+.badge.opted_out,
+.badge.closed {
+  background: #fee4e2;
+  color: #b42318;
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.kpi {
+  padding: 1rem;
+  border: 1px solid #e3e5e8;
+  border-radius: 10px;
+  background: #fafbfc;
+}
+
+.kpi .value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.kpi .label {
+  font-size: 0.85rem;
+  color: #667;
+}
+
+.toolbar {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+}
+
+.toolbar input,
+.toolbar select {
+  padding: 0.5rem 0.7rem;
+  font-size: 0.95rem;
+  border: 1px solid #c9ccd1;
+  border-radius: 8px;
+}
+
+tr.clickable:hover {
+  background: #f3f6ff;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 720px) {
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+  .nav {
+    flex-wrap: wrap;
+  }
+}
+
+.panel {
+  padding: 1rem;
+  border: 1px solid #e3e5e8;
+  border-radius: 10px;
+  margin-top: 1rem;
+}
+
+.panel h2 {
+  margin-top: 0;
+}
+
+.timeline {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.timeline li {
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #eef0f3;
+  font-size: 0.9rem;
+}
+
+.timeline .when {
+  color: #667;
+  font-size: 0.8rem;
+}
+
+textarea {
+  padding: 0.6rem 0.7rem;
+  font-family: inherit;
+  font-size: 1rem;
+  border: 1px solid #c9ccd1;
+  border-radius: 8px;
+  min-height: 70px;
+}
