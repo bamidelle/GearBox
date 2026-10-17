@@ -9,7 +9,7 @@ import {
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from './supabase'
 
-export type Shop = { id: string; name: string }
+export type Shop = { id: string; name: string; currency: string }
 
 type AuthState = {
   session: Session | null
@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // RLS only returns shops the user belongs to (one shop per user in the MVP).
     const { data, error } = await supabase
       .from('shops')
-      .select('id, name')
+      .select('id, name, currency')
       .limit(1)
       .maybeSingle()
     if (error) console.error('Failed to load shop', error)
