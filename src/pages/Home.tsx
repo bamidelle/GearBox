@@ -1,8 +1,16 @@
+import { useAuth } from '../lib/auth'
+
 export default function Home() {
+  const { shop, session, signOut } = useAuth()
+
   return (
-    <main style={{ maxWidth: 640, margin: '4rem auto', padding: '0 1rem' }}>
-      <h1>Gearbox</h1>
-      <p>Recover revenue from declined repairs.</p>
+    <main className="card">
+      <h1>{shop?.name}</h1>
+      <p className="muted">Signed in as {session?.user.email}</p>
+      <p>Recover revenue from declined repairs. Import and follow-up tools come next.</p>
+      <button type="button" onClick={signOut}>
+        Log out
+      </button>
     </main>
   )
 }
