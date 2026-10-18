@@ -1,0 +1,87 @@
+.steps {
+  display: flex;
+  gap: 1.25rem;
+  margin: 1rem 0 1.5rem;
+  padding: 0;
+  list-style: none;
+  flex-wrap: wrap;
+}
+
+.steps li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.steps .num {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  background: #eef0f3;
+  color: var(--muted);
+}
+
+.steps li.active {
+  color: var(--ink);
+}
+
+.steps li.active .num {
+  background: var(--orange);
+  color: #fff;
+}
+
+.steps li.done .num {
+  background: #dcfce7;
+  color: var(--green);
+}
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  background: #fafbfc;
+  border: 2px dashed #d3d7de;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.dropzone:hover,
+.dropzone.over {
+  border-color: var(--orange);
+  background: var(--orange-soft);
+}
+
+.dropzone input {
+  display: none;
+}
+
+.dropzone .up {
+  color: var(--orange);
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.actions .back {
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid #d3d7de;
+}
+
+.actions .back:hover:not(:disabled) {
+  background: var(--bg);
+}

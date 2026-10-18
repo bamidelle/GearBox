@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
+import { Icon } from '../components/Icons'
 import '../auth.css'
 
 function EyeIcon({ off }: { off: boolean }) {
@@ -64,9 +65,14 @@ export default function Auth() {
 
   return (
     <main className="card">
-      <h1>GearBox</h1>
+      <div className="auth-brand">
+        <span className="logo-mark">
+          <Icon name="settings" size={22} />
+        </span>
+        <h1>GearBox</h1>
+      </div>
       <p className="muted">
-        {mode === 'login' ? 'Log in to your shop.' : 'Create your account.'}
+        {mode === 'login' ? 'Log in to your shop.' : 'Create your account. Recover more. Keep customers.'}
       </p>
 
       <form onSubmit={onSubmit}>
