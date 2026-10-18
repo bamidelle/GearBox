@@ -1,0 +1,14 @@
+.badge.granted {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.badge.withdrawn {
+  background: #fee2e2;
+  color: var(--red);
+}
+
+.badge.unknown {
+  background: #eef0f3;
+  color: var(--muted);
+}

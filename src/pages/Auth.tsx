@@ -31,8 +31,8 @@ function EyeIcon({ off }: { off: boolean }) {
   )
 }
 
-export default function Auth() {
-  const [mode, setMode] = useState<'login' | 'signup'>('login')
+export default function Auth({ initialMode = 'login' }: { initialMode?: 'login' | 'signup' }) {
+  const [mode, setMode] = useState<'login' | 'signup'>(initialMode)
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

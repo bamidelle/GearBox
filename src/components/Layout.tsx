@@ -8,6 +8,7 @@ const ITEMS: { to: string; label: string; short: string; icon: IconName; end?: b
   { to: '/', label: 'Dashboard', short: 'Home', icon: 'dashboard', end: true },
   { to: '/opportunities', label: 'Declined Jobs', short: 'Jobs', icon: 'jobs', end: true },
   { to: '/opportunities/new', label: 'Add Repair', short: 'Add', icon: 'plus' },
+  { to: '/customers', label: 'Customers', short: 'Clients', icon: 'users' },
   { to: '/import', label: 'Import CSV', short: 'Import', icon: 'upload' },
   { to: '/settings', label: 'Settings', short: 'Settings', icon: 'settings' },
 ]
@@ -74,7 +75,7 @@ export default function Layout() {
       <nav className="bottomnav">
         {ITEMS.map((i) => (
           <NavLink key={i.to} to={i.to} end={i.end}>
-            <Icon name={i.icon} />
+            <Icon name={i.icon} size={19} />
             {i.short}
           </NavLink>
         ))}
