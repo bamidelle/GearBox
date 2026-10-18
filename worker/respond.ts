@@ -166,10 +166,10 @@ async function notifyShop(
   const text =
     `${customerName} ${TYPE_LABEL[type]}.\n\nRepair: ${description}\n` +
     (message ? `\nTheir message:\n${message}\n` : '') +
-    `\nOpen in Gearbox: ${appBase(env)}/opportunities/${opportunityId}`
+    `\nOpen in GearBox: ${appBase(env)}/opportunities/${opportunityId}`
 
   await sendEmail(env, {
-    from: `Gearbox <${env.EMAIL_FROM_ADDRESS}>`,
+    from: `GearBox <${env.EMAIL_FROM_ADDRESS}>`,
     to,
     subject: `${customerName} ${TYPE_LABEL[type]}`,
     text,

@@ -9,7 +9,7 @@ export default function Layout() {
   return (
     <>
       <header className="nav">
-        <strong className="brand">{shop?.name ?? 'Gearbox'}</strong>
+        <strong className="brand">{shop?.name ?? 'GearBox'}</strong>
         <nav>
           <NavLink to="/" end>
             Dashboard

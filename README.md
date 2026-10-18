@@ -1,12 +1,12 @@
-# Gearbox
+# GearBox
 
 Declined-repair revenue recovery for independent auto repair shops.
 
 ## Stack
 - Vite + React + TypeScript
 - Supabase (database, auth)
-- Cloudflare (hosting)
-- Resend (email, to be set up)
+- Cloudflare Workers (hosting, scheduled follow-ups)
+- Resend (email)
 
 ## Run locally
 ```bash
@@ -16,8 +16,6 @@ npm run dev
 ```
 
 ## Deploy
-```bash
-npm run deploy
-```
+See `DEPLOY.md`.
 
 Database migrations live in `supabase/migrations/`.
