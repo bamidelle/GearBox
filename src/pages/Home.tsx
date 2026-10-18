@@ -1,107 +1,184 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth'
 import Replies from '../components/Replies'
-import { STATUSES, STATUS_LABELS, fetchAll, isOpen, money, type OpportunityStatus } from '../lib/types'
+import { Icon, type IconName } from '../components/Icons'
+import { Donut, TrendChart } from '../components/Charts'
+import { STATUS_LABELS, fetchAll, money, type OpportunityStatus } from '../lib/types'
 
-type Row = {
+type Stat = {
   status: OpportunityStatus
-  estimate_amount: number | null
-  approved_amount: number | null
   paid_amount: number | null
+  paid_at: string | null
+}
+
+type Recent = {
+  id: string
+  description: string
+  estimate_amount: number | null
+  currency: string
+  status: OpportunityStatus
+  customers: { name: string } | null
+  vehicles: { year: number | null; make: string | null; model: string | null } | null
+}
+
+const APPROVED: OpportunityStatus[] = ['approved', 'work_completed', 'paid']
+const IN_PROGRESS: OpportunityStatus[] = ['follow_up_scheduled', 'contacted', 'customer_interested', 'appointment_requested']
+const NO_RESPONSE: OpportunityStatus[] = ['new']
+const DECLINED: OpportunityStatus[] = ['declined_again', 'opted_out', 'closed']
+
+function Kpi({ icon, label, value }: { icon: IconName; label: string; value: string }) {
+  return (
+    <div className="kpi">
+      <span className="ico">
+        <Icon name={icon} />
+      </span>
+      <span className="label">{label}</span>
+      <span className="value">{value}</span>
+    </div>
+  )
 }
 
 export default function Home() {
   const { shop } = useAuth()
-  const [rows, setRows] = useState<Row[] | null>(null)
+  const [stats, setStats] = useState<Stat[] | null>(null)
+  const [recent, setRecent] = useState<Recent[]>([])
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!shop) return
     let cancelled = false
-    fetchAll<Row>((from, to) =>
+    fetchAll<Stat>((from, to) =>
       supabase
         .from('repair_opportunities')
-        .select('status, estimate_amount, approved_amount, paid_amount')
+        .select('status, paid_amount, paid_at')
         .eq('shop_id', shop.id)
         .range(from, to),
     )
-      .then((data) => !cancelled && setRows(data))
+      .then((data) => !cancelled && setStats(data))
       .catch((e: Error) => !cancelled && setError(e.message))
+
+    supabase
+      .from('repair_opportunities')
+      .select('id, description, estimate_amount, currency, status, customers(name), vehicles(year, make, model)')
+      .eq('shop_id', shop.id)
+      .order('created_at', { ascending: false })
+      .limit(5)
+      .then(({ data }) => !cancelled && setRecent((data ?? []) as unknown as Recent[]))
     return () => {
       cancelled = true
     }
   }, [shop])
 
+  const trend = useMemo(() => {
+    const paid = (stats ?? []).filter((s) => s.status === 'paid' && s.paid_at && s.paid_amount)
+    const now = Date.now()
+    const week = 7 * 86_400_000
+    return Array.from({ length: 8 }, (_, i) => {
+      const end = now - (7 - i) * week
+      const value = paid
+        .filter((p) => new Date(p.paid_at as string).getTime() <= end + week)
+        .reduce((acc, p) => acc + (p.paid_amount ?? 0), 0)
+      const d = new Date(end + week)
+      return { label: d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }), value }
+    })
+  }, [stats])
+
   if (!shop) return null
   const cur = shop.currency
-
-  const total = rows?.length ?? 0
-  const sum = (list: Row[], pick: (r: Row) => number | null) =>
-    list.reduce((acc, r) => acc + (pick(r) ?? 0), 0)
-
-  const open = (rows ?? []).filter((r) => isOpen(r.status))
-  const paid = (rows ?? []).filter((r) => r.status === 'paid')
-  const inProgress = (rows ?? []).filter((r) => r.status === 'approved' || r.status === 'work_completed')
-
-  const declinedValue = sum(rows ?? [], (r) => r.estimate_amount)
-  const recovered = sum(paid, (r) => r.paid_amount)
-  const rate = declinedValue > 0 ? (recovered / declinedValue) * 100 : 0
-
-  const byStatus = STATUSES.map((s) => ({
-    status: s,
-    count: (rows ?? []).filter((r) => r.status === s).length,
-  })).filter((x) => x.count > 0)
+  const all = stats ?? []
+  const total = all.length
+  const count = (list: OpportunityStatus[]) => all.filter((s) => list.includes(s.status)).length
+  const approved = count(APPROVED)
+  const recovered = all
+    .filter((s) => s.status === 'paid')
+    .reduce((acc, s) => acc + (s.paid_amount ?? 0), 0)
+  const conversion = total > 0 ? (approved / total) * 100 : 0
+  const hasRecovered = trend.some((p) => p.value > 0)
 
   return (
-    <main className="card wide">
+    <main className="page">
       <h1>Dashboard</h1>
+      <p className="muted">Here&rsquo;s what&rsquo;s happening with your follow-ups.</p>
       {error && <p className="error">{error}</p>}
 
       <Replies />
 
-      {rows && total === 0 && (
-        <p>
-          No declined repairs yet. <Link to="/import">Import a CSV</Link> to start recovering revenue.
-        </p>
+      {stats && total === 0 && (
+        <div className="panel">
+          <p>
+            No declined repairs yet. <Link to="/import">Import a CSV</Link> or{' '}
+            <Link to="/opportunities/new">add one manually</Link> to start recovering revenue.
+          </p>
+        </div>
       )}
 
-      {rows && total > 0 && (
+      {stats && total > 0 && (
         <>
           <div className="kpis">
-            <div className="kpi">
-              <div className="value">{money(recovered, cur)}</div>
-              <div className="label">Recovered revenue ({paid.length} paid)</div>
+            <Kpi icon="jobs" label="Total Declined Jobs" value={String(total)} />
+            <Kpi icon="check" label="Approved Repairs" value={String(approved)} />
+            <Kpi icon="dollar" label="Recovered Revenue" value={money(recovered, cur)} />
+            <Kpi icon="percent" label="Conversion Rate" value={`${conversion.toFixed(1)}%`} />
+          </div>
+
+          <div className="dash-grid">
+            <div className="panel">
+              <h2>Revenue Recovery Trend</h2>
+              {hasRecovered ? (
+                <TrendChart points={trend} currency={cur} />
+              ) : (
+                <p className="muted">No recovered revenue yet. It appears here once a repair is marked paid.</p>
+              )}
             </div>
-            <div className="kpi">
-              <div className="value">{money(sum(open, (r) => r.estimate_amount), cur)}</div>
-              <div className="label">Open opportunities ({open.length})</div>
-            </div>
-            <div className="kpi">
-              <div className="value">{money(sum(inProgress, (r) => r.approved_amount), cur)}</div>
-              <div className="label">Approved, not yet paid ({inProgress.length})</div>
-            </div>
-            <div className="kpi">
-              <div className="value">{rate.toFixed(1)}%</div>
-              <div className="label">Recovery rate of {money(declinedValue, cur)} declined</div>
+            <div className="panel">
+              <h2>Job Outcomes</h2>
+              <Donut
+                segments={[
+                  { label: 'Approved', count: approved, color: '#16a34a' },
+                  { label: 'In Progress', count: count(IN_PROGRESS), color: '#f59e0b' },
+                  { label: 'No Response', count: count(NO_RESPONSE), color: '#9ca3af' },
+                  { label: 'Declined', count: count(DECLINED), color: '#dc2626' },
+                ]}
+              />
             </div>
           </div>
 
           <div className="panel">
-            <h2>By status</h2>
-            <ul className="timeline">
-              {byStatus.map((x) => (
-                <li key={x.status}>
-                  <span className={`badge ${x.status}`}>{STATUS_LABELS[x.status]}</span> {x.count}
-                </li>
-              ))}
-            </ul>
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <h2 style={{ margin: 0 }}>Recent Declined Jobs</h2>
+              <Link to="/opportunities">View all &rarr;</Link>
+            </div>
+            <div className="scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th>Vehicle</th>
+                    <th>Service</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recent.map((r) => (
+                    <tr key={r.id} className="clickable">
+                      <td>
+                        <Link to={`/opportunities/${r.id}`}>{r.customers?.name ?? 'Unknown'}</Link>
+                      </td>
+                      <td>{[r.vehicles?.year, r.vehicles?.make, r.vehicles?.model].filter(Boolean).join(' ') || '-'}</td>
+                      <td>{r.description}</td>
+                      <td>{money(r.estimate_amount, r.currency)}</td>
+                      <td>
+                        <span className={`badge ${r.status}`}>{STATUS_LABELS[r.status]}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-
-          <p>
-            <Link to="/opportunities">View all opportunities</Link>
-          </p>
         </>
       )}
     </main>
