@@ -9,11 +9,14 @@ import Import from './pages/Import'
 import Opportunities from './pages/Opportunities'
 import OpportunityDetail from './pages/OpportunityDetail'
 import Settings from './pages/Settings'
+import Respond from './pages/Respond'
 
 export default function App() {
   return (
     <AuthProvider>
       <Routes>
+        {/* Public customer reply page (opened from follow-up emails) */}
+        <Route path="/r/:token" element={<Respond />} />
         <Route
           path="/login"
           element={

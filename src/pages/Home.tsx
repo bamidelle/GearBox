@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth'
+import Replies from '../components/Replies'
 import { STATUSES, STATUS_LABELS, fetchAll, isOpen, money, type OpportunityStatus } from '../lib/types'
 
 type Row = {
@@ -57,6 +58,8 @@ export default function Home() {
     <main className="card wide">
       <h1>Dashboard</h1>
       {error && <p className="error">{error}</p>}
+
+      <Replies />
 
       {rows && total === 0 && (
         <p>

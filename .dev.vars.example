@@ -1,0 +1,6 @@
+# Local-only secrets for `wrangler dev`. Copy to .dev.vars (git-ignored).
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+RESEND_API_KEY=
+EMAIL_FROM_ADDRESS=
+APP_URL=http://localhost:8787
