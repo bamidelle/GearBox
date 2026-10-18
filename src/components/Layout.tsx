@@ -14,7 +14,10 @@ export default function Layout() {
           <NavLink to="/" end>
             Dashboard
           </NavLink>
-          <NavLink to="/opportunities">Opportunities</NavLink>
+          <NavLink to="/opportunities" end>
+            Opportunities
+          </NavLink>
+          <NavLink to="/opportunities/new">Add repair</NavLink>
           <NavLink to="/import">Import</NavLink>
           <NavLink to="/settings">Settings</NavLink>
         </nav>

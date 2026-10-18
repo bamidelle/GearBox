@@ -7,7 +7,8 @@ import Onboarding from './pages/Onboarding'
 import Home from './pages/Home'
 import Import from './pages/Import'
 import Opportunities from './pages/Opportunities'
-import OpportunityDetail from './pages/OpportunityDetail'
+import OpportunityPage from './pages/OpportunityPage'
+import AddRepair from './pages/AddRepair'
 import SettingsHome from './pages/SettingsHome'
 import Respond from './pages/Respond'
 
@@ -43,7 +44,8 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/import" element={<Import />} />
           <Route path="/opportunities" element={<Opportunities />} />
-          <Route path="/opportunities/:id" element={<OpportunityDetail />} />
+          <Route path="/opportunities/new" element={<AddRepair />} />
+          <Route path="/opportunities/:id" element={<OpportunityPage />} />
           <Route path="/settings" element={<SettingsHome />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
