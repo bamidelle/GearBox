@@ -86,9 +86,9 @@ export default function Respond() {
         <p style={{ textAlign: 'center' }}>
           {doneType === 'opt_out'
             ? 'You will not receive further emails about this repair.'
-            : doneType === 'approve'
-              ? `${info?.shopName} has your approval and will contact you to book the work.`
-              : `${info?.shopName} has your reply and will be in touch.`}
+            : doneType === 'not_now'
+              ? `Thanks for letting ${info?.shopName} know.`
+              : `${info?.shopName} has your request and will confirm the final scope and price with you.`}
         </p>
       </Shell>
     )
@@ -108,6 +108,10 @@ export default function Respond() {
         </div>
         <div>{info?.description}</div>
         {info?.estimate != null && <div className="resp-amount">{money(info.estimate, info.currency)}</div>}
+        <div className="small" style={{ marginTop: '0.5rem' }}>
+          This is the shop&rsquo;s earlier estimate. The final scope and price will be confirmed by the shop
+          before any work is done.
+        </div>
       </div>
 
       <form onSubmit={(e) => e.preventDefault()} style={{ margin: 0 }}>
@@ -118,13 +122,13 @@ export default function Respond() {
         {error && <p className="error">{error}</p>}
         <div className="stack">
           <button type="button" disabled={busy} onClick={() => send('approve')}>
-            Approve Repair
+            I&rsquo;d like to go ahead
           </button>
           <button type="button" className="btn-outline" disabled={busy} onClick={() => send('callback')}>
             Request Callback
           </button>
           <button type="button" className="btn-outline" disabled={busy} onClick={() => send('appointment')}>
-            Schedule Appointment
+            Request Appointment
           </button>
         </div>
       </form>
