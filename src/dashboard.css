@@ -1,0 +1,103 @@
+.hello {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+
+.empty-hero {
+  margin: 1rem 0;
+  padding: 1.5rem;
+  color: #fff;
+  background: linear-gradient(135deg, #1b1f25, #2e353f);
+  border-radius: 16px;
+}
+
+.empty-hero h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.3rem;
+}
+
+.empty-hero p {
+  margin: 0 0 1rem;
+  color: #cfd3da;
+}
+
+.empty-hero .row a.btn-outline {
+  color: #fff;
+  background: transparent;
+  border-color: #5b626d;
+}
+
+.empty-hero button.btn-outline {
+  color: #fff;
+  background: transparent;
+  border-color: #5b626d;
+}
+
+.checklist {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+}
+
+.checklist li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #eef0f3;
+}
+
+.checklist li:last-child {
+  border-bottom: 0;
+}
+
+.checklist .tick {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #d3d7de;
+  border-radius: 50%;
+  color: #fff;
+}
+
+.checklist li.done .tick {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.checklist li.done span.t {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.progress {
+  height: 6px;
+  margin: 0.4rem 0 0.2rem;
+  overflow: hidden;
+  background: #eef0f3;
+  border-radius: 999px;
+}
+
+.progress > div {
+  height: 100%;
+  background: var(--orange);
+}
