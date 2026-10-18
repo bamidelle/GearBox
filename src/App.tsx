@@ -13,6 +13,7 @@ import AddRepair from './pages/AddRepair'
 import Customers from './pages/Customers'
 import CustomerDetail from './pages/CustomerDetail'
 import FollowUps from './pages/FollowUps'
+import Reports from './pages/Reports'
 import SettingsHome from './pages/SettingsHome'
 import Respond from './pages/Respond'
 
@@ -69,6 +70,7 @@ export default function App() {
           <Route path="/customers" element={<Customers />} />
           <Route path="/customers/:id" element={<CustomerDetail />} />
           <Route path="/follow-ups" element={<FollowUps />} />
+          <Route path="/reports" element={<Reports />} />
           <Route path="/settings" element={<SettingsHome />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,13 +1,9 @@
-.plain {
-  border: 0;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
+.mobile-only {
+  display: none;
 }
 
-.plain:disabled input,
-.plain:disabled select {
-  background: #f3f4f6;
+@media (max-width: 860px) {
+  .mobile-only {
+    display: grid;
+  }
 }

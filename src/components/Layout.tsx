@@ -11,6 +11,7 @@ const ITEMS: { to: string; label: string; short: string; icon: IconName; end?: b
   { to: '/opportunities/new', label: 'Add Repair', short: 'Add', icon: 'plus' },
   { to: '/customers', label: 'Customers', short: 'Clients', icon: 'users', bottom: true },
   { to: '/import', label: 'Import CSV', short: 'Import', icon: 'upload', bottom: true },
+  { to: '/reports', label: 'Reports', short: 'Reports', icon: 'trend' },
   { to: '/settings', label: 'Settings', short: 'Settings', icon: 'settings' },
 ]
 
@@ -62,6 +63,9 @@ export default function Layout() {
           </div>
           <span className="where">{shop?.name}</span>
           <div className="user">
+            <Link to="/reports" className="icon-btn mobile-only" aria-label="Reports" title="Reports">
+              <Icon name="trend" />
+            </Link>
             <Link to="/settings" className="avatar" title={`Settings (${fullName || session?.user.email || ''})`} aria-label="Settings">
               {initials}
             </Link>

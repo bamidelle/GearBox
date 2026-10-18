@@ -1,0 +1,62 @@
+.funnel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.funnel .bar-row {
+  display: grid;
+  grid-template-columns: 130px 1fr 90px;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.funnel .bar-track {
+  height: 14px;
+  background: #eef0f3;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.funnel .bar-fill {
+  height: 100%;
+  background: var(--orange);
+  border-radius: 999px;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.filters label {
+  font-size: 0.8rem;
+}
+
+.filters select,
+.filters input {
+  padding: 0.5rem 0.7rem;
+  font-size: 0.95rem;
+}
+
+details.alt {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+}
+
+details.alt summary {
+  cursor: pointer;
+  color: var(--orange-dark);
+  font-weight: 600;
+}
+
+@media (max-width: 560px) {
+  .funnel .bar-row {
+    grid-template-columns: 100px 1fr 70px;
+  }
+}
