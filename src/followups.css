@@ -1,0 +1,42 @@
+.tabs {
+  display: flex;
+  gap: 0.4rem;
+  margin: 1rem 0 0.5rem;
+  padding-bottom: 0.25rem;
+  overflow-x: auto;
+}
+
+.tabs button {
+  flex: none;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid #d3d7de;
+  border-radius: 999px;
+}
+
+.tabs button:hover:not(:disabled) {
+  background: var(--bg);
+}
+
+.tabs button.on {
+  color: #fff;
+  background: var(--orange);
+  border-color: var(--orange);
+}
+
+.preview {
+  padding: 1rem;
+  white-space: pre-wrap;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  background: #fafbfc;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.preview .subj {
+  margin-bottom: 0.6rem;
+  font-weight: 700;
+}

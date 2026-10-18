@@ -1,15 +1,16 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
 import { Icon, type IconName } from './Icons'
 import '../layout.css'
 import '../settings.css'
 
-const ITEMS: { to: string; label: string; short: string; icon: IconName; end?: boolean }[] = [
-  { to: '/', label: 'Dashboard', short: 'Home', icon: 'dashboard', end: true },
-  { to: '/opportunities', label: 'Declined Jobs', short: 'Jobs', icon: 'jobs', end: true },
+const ITEMS: { to: string; label: string; short: string; icon: IconName; end?: boolean; bottom?: boolean }[] = [
+  { to: '/', label: 'Dashboard', short: 'Home', icon: 'dashboard', end: true, bottom: true },
+  { to: '/opportunities', label: 'Declined Jobs', short: 'Jobs', icon: 'jobs', end: true, bottom: true },
+  { to: '/follow-ups', label: 'Follow-ups', short: 'Follow-ups', icon: 'mail', bottom: true },
   { to: '/opportunities/new', label: 'Add Repair', short: 'Add', icon: 'plus' },
-  { to: '/customers', label: 'Customers', short: 'Clients', icon: 'users' },
-  { to: '/import', label: 'Import CSV', short: 'Import', icon: 'upload' },
+  { to: '/customers', label: 'Customers', short: 'Clients', icon: 'users', bottom: true },
+  { to: '/import', label: 'Import CSV', short: 'Import', icon: 'upload', bottom: true },
   { to: '/settings', label: 'Settings', short: 'Settings', icon: 'settings' },
 ]
 
@@ -61,9 +62,9 @@ export default function Layout() {
           </div>
           <span className="where">{shop?.name}</span>
           <div className="user">
-            <span className="avatar" title={fullName || session?.user.email || ''}>
+            <Link to="/settings" className="avatar" title={`Settings (${fullName || session?.user.email || ''})`} aria-label="Settings">
               {initials}
-            </span>
+            </Link>
             <button type="button" className="icon-btn" onClick={signOut} aria-label="Log out" title="Log out">
               <Icon name="logout" />
             </button>
@@ -73,7 +74,7 @@ export default function Layout() {
       </div>
 
       <nav className="bottomnav">
-        {ITEMS.map((i) => (
+        {ITEMS.filter((i) => i.bottom).map((i) => (
           <NavLink key={i.to} to={i.to} end={i.end}>
             <Icon name={i.icon} size={19} />
             {i.short}

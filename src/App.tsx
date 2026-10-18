@@ -6,12 +6,13 @@ import Landing from './pages/Landing'
 import Auth from './pages/Auth'
 import Onboarding from './pages/Onboarding'
 import Home from './pages/Home'
-import Import from './pages/Import'
+import ImportPage from './pages/ImportPage'
 import Opportunities from './pages/Opportunities'
 import OpportunityPage from './pages/OpportunityPage'
 import AddRepair from './pages/AddRepair'
 import Customers from './pages/Customers'
 import CustomerDetail from './pages/CustomerDetail'
+import FollowUps from './pages/FollowUps'
 import SettingsHome from './pages/SettingsHome'
 import Respond from './pages/Respond'
 
@@ -61,12 +62,13 @@ export default function App() {
           }
         >
           <Route path="/" element={<Home />} />
-          <Route path="/import" element={<Import />} />
+          <Route path="/import" element={<ImportPage />} />
           <Route path="/opportunities" element={<Opportunities />} />
           <Route path="/opportunities/new" element={<AddRepair />} />
           <Route path="/opportunities/:id" element={<OpportunityPage />} />
           <Route path="/customers" element={<Customers />} />
           <Route path="/customers/:id" element={<CustomerDetail />} />
+          <Route path="/follow-ups" element={<FollowUps />} />
           <Route path="/settings" element={<SettingsHome />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

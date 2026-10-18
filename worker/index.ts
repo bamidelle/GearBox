@@ -1,5 +1,6 @@
 import type { Ctx, Env } from './env'
 import { handleRespond } from './respond'
+import { handleTestSend } from './testsend'
 import { runFollowUps } from './followups'
 
 export default {
@@ -7,6 +8,9 @@ export default {
     const { pathname } = new URL(request.url)
     if (pathname === '/api/respond' || pathname.startsWith('/api/respond/')) {
       return handleRespond(request, env, ctx)
+    }
+    if (pathname === '/api/test-send') {
+      return handleTestSend(request, env)
     }
     // Everything else is the React app (static assets, SPA fallback).
     return env.ASSETS.fetch(request)
