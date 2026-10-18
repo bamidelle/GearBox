@@ -18,6 +18,7 @@ export default function Onboarding() {
   const browserZone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
   const [name, setName] = useState('')
+  const [address, setAddress] = useState('')
   const [timezone, setTimezone] = useState(
     timezones.includes(browserZone) ? browserZone : timezones[0],
   )
@@ -32,7 +33,7 @@ export default function Onboarding() {
     setBusy(true)
     setError(null)
 
-    const { error } = await supabase.rpc('create_shop', {
+    const { data: shopId, error } = await supabase.rpc('create_shop', {
       p_name: name.trim(),
       p_timezone: timezone,
       p_currency: currency,
@@ -46,6 +47,14 @@ export default function Onboarding() {
       setBusy(false)
       return
     }
+
+    // Mailing address goes in every follow-up email footer. Can also be fixed later in Settings.
+    const { error: addrErr } = await supabase
+      .from('shops')
+      .update({ postal_address: address.trim() })
+      .eq('id', shopId as string)
+    if (addrErr) console.error('Saving address failed', addrErr)
+
     await refreshShop()
     navigate('/', { replace: true })
   }
@@ -64,6 +73,18 @@ export default function Onboarding() {
             maxLength={120}
             required
           />
+        </label>
+        <label>
+          Mailing address
+          <input
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            placeholder="123 Main St, Springfield, IL 62701"
+            minLength={5}
+            maxLength={300}
+            required
+          />
+          <span className="muted">Shown at the bottom of follow-up emails (required by email laws).</span>
         </label>
         <label>
           Contact email
@@ -108,7 +129,7 @@ export default function Onboarding() {
 
         {error && <p className="error">{error}</p>}
 
-        <button type="submit" disabled={busy || !ack || !name.trim()}>
+        <button type="submit" disabled={busy || !ack || !name.trim() || address.trim().length < 5}>
           {busy ? 'Creating...' : 'Create shop'}
         </button>
       </form>

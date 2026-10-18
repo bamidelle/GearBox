@@ -1,32 +1,43 @@
-# Deploying Gearbox to Cloudflare
+# Deploying Gearbox to Cloudflare (no terminal needed)
 
-One Cloudflare Worker serves the React app, the public customer reply endpoint (`/api/respond`), and a scheduled job (every 30 minutes) that sends follow-up emails.
+One Cloudflare Worker serves the React app, the public customer reply endpoint (`/api/respond`), and a scheduled job (every 30 minutes) that sends follow-up emails. Cloudflare builds and deploys it automatically from this GitHub repo on every push to `main`.
 
-## 1. Build and deploy
+## 1. Connect the repo (gets you the live link)
 
-```bash
-npm install
-cp .env.example .env.local   # VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (baked into the build)
-npm run deploy               # asks you to log in to Cloudflare the first time
-```
+1. Cloudflare dashboard > **Workers & Pages** > **Create** > **Import a repository** (GitHub). Allow access to `bamidelle/GearBox`.
+2. Project/Worker name: `gearbox` (must match `name` in `wrangler.jsonc`).
+3. Build command: `npm run build`. Deploy command: `npx wrangler deploy`. Root directory: `/`.
+4. Under **Build variables**, add:
+   - `VITE_SUPABASE_URL` = your Supabase project URL
+   - `VITE_SUPABASE_ANON_KEY` = your Supabase anon (public) key
+5. Save and Deploy. Your link is shown on the Worker page, like `https://gearbox.<your-subdomain>.workers.dev`.
 
-Note the URL it prints (like `https://gearbox.<your-subdomain>.workers.dev`).
+## 2. Add server secrets (for emails and customer replies)
 
-## 2. Add server secrets
+Worker > **Settings** > **Variables and Secrets** > Add (type: Secret):
 
-Run each command and paste the value when asked. Never put these in `.env.local` or in the repo.
+| Name | Value |
+| --- | --- |
+| `SUPABASE_URL` | same as `VITE_SUPABASE_URL` |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase > Project Settings > API > `service_role` key (never share or commit) |
+| `RESEND_API_KEY` | from resend.com |
+| `EMAIL_FROM_ADDRESS` | an address on your verified Resend domain |
+| `APP_URL` | your Worker link from step 1 |
 
-```bash
-npx wrangler secret put SUPABASE_URL                 # same URL as VITE_SUPABASE_URL
-npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY    # Supabase > Project Settings > API > service_role key
-npx wrangler secret put RESEND_API_KEY               # from resend.com
-npx wrangler secret put EMAIL_FROM_ADDRESS           # an address on your verified Resend domain
-npx wrangler secret put APP_URL                      # the Worker URL from step 1
-```
+The app itself (sign up, import, opportunities, dashboard) works without these. They are only needed for follow-up emails and the customer reply page.
 
 ## 3. Turn on follow-ups
 
-In the app: Settings > add templates > tick "Enable automatic follow-up emails".
+In the app: Settings > fill in the shop mailing address > add templates > tick "Enable automatic follow-up emails".
+
+## Using the terminal instead
+
+```bash
+npm install
+cp .env.example .env.local   # VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
+npm run deploy               # asks you to log in to Cloudflare the first time
+npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY   # repeat for each secret above
+```
 
 ## Local testing of the Worker
 
@@ -38,7 +49,7 @@ npm run build && npx wrangler dev --test-scheduled
 
 ## How follow-ups work
 
-- Each 30-minute run checks every shop with follow-ups enabled, skipping shops currently inside their quiet hours.
+- Each 30-minute run checks every shop with follow-ups enabled, skipping shops that have no mailing address or are inside their quiet hours.
 - Repairs in New, Follow-up scheduled, or Contacted status get email number N once the Nth follow-up day has passed (counted from the declined date, then from the last email sent).
-- Customers who opted out are never emailed. Each email carries a reply/opt-out link.
+- Customers who opted out are never emailed. Each email carries a reply/opt-out link and the shop's mailing address.
 - At most 50 emails per shop per run. A unique key per repair and step prevents double sends.

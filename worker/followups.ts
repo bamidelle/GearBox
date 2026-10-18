@@ -14,7 +14,7 @@ type ShopSettings = {
   quiet_hours_start: string
   quiet_hours_end: string
   default_cadence_days: number[] | null
-  shops: { name: string; timezone: string } | null
+  shops: { name: string; timezone: string; postal_address: string | null } | null
 }
 
 type Template = { id: string; subject: string; body: string }
@@ -41,7 +41,7 @@ export async function runFollowUps(env: Env, now = new Date()): Promise<void> {
   const { data, error } = await db
     .from('shop_settings')
     .select(
-      'shop_id, sender_name, reply_to_email, quiet_hours_start, quiet_hours_end, default_cadence_days, shops(name, timezone)',
+      'shop_id, sender_name, reply_to_email, quiet_hours_start, quiet_hours_end, default_cadence_days, shops(name, timezone, postal_address)',
     )
     .eq('reminders_enabled', true)
   if (error) {
@@ -60,6 +60,8 @@ export async function runFollowUps(env: Env, now = new Date()): Promise<void> {
 async function processShop(env: Env, db: Db, s: ShopSettings, now: Date): Promise<void> {
   const shop = s.shops
   if (!shop) return
+  // A mailing address is required in the footer of these emails.
+  if (!shop.postal_address?.trim()) return
 
   const cadence = (s.default_cadence_days ?? []).filter((n) => n > 0).sort((a, b) => a - b)
   if (cadence.length === 0) return
@@ -121,7 +123,7 @@ async function processShop(env: Env, db: Db, s: ShopSettings, now: Date): Promis
     if (now.getTime() < dueAt) continue
 
     const template = templates[Math.min(idx, templates.length - 1)]
-    const ok = await sendFollowUp(env, db, s, shop.name, opp, c.email, c.name, template, idx, now)
+    const ok = await sendFollowUp(env, db, s, shop, opp, c.email, c.name, template, idx, now)
     if (ok) sent += 1
   }
 }
@@ -130,7 +132,7 @@ async function sendFollowUp(
   env: Env,
   db: Db,
   s: ShopSettings,
-  shopName: string,
+  shop: { name: string; postal_address: string | null },
   opp: Opp,
   email: string,
   customerName: string,
@@ -173,16 +175,17 @@ async function sendFollowUp(
       customer_name: customerName,
       vehicle: vehicle || 'vehicle',
       repair: opp.description,
-      shop_name: shopName,
+      shop_name: shop.name,
       response_link: link,
     }
 
     const text =
       `${fill(template.body, vars)}\n\n--\n` +
-      `You are receiving this because ${shopName} recommended a repair for your vehicle. ` +
-      `To stop these emails, use this link: ${link}`
+      `You are receiving this because ${shop.name} recommended a repair for your vehicle. ` +
+      `To stop these emails, use this link: ${link}\n\n` +
+      `${shop.name}, ${shop.postal_address}`
 
-    const senderName = (s.sender_name?.trim() || shopName).replace(/[<>"]/g, '')
+    const senderName = (s.sender_name?.trim() || shop.name).replace(/[<>"]/g, '')
     const providerId = await sendEmail(env, {
       from: `${senderName} <${env.EMAIL_FROM_ADDRESS}>`,
       to: email,
