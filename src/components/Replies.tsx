@@ -12,6 +12,7 @@ type Reply = {
 }
 
 const LABELS: Record<string, string> = {
+  approve: 'Approved the repair',
   appointment: 'Wants to schedule',
   callback: 'Wants a call back',
   interested: 'Interested',

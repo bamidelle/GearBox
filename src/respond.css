@@ -1,0 +1,78 @@
+.resp {
+  width: calc(100% - 2rem);
+  max-width: 440px;
+  margin: 1rem auto 3rem;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(16, 24, 40, 0.06);
+}
+
+.resp-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1.2rem;
+  background: var(--sidebar);
+  color: #fff;
+  font-weight: 800;
+}
+
+.resp-head .logo-mark {
+  width: 30px;
+  height: 30px;
+}
+
+.resp-body {
+  padding: 1.4rem 1.3rem 1.6rem;
+}
+
+.resp-card {
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
+  background: #fafbfc;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.resp-card .small {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.resp-amount {
+  margin-top: 0.4rem;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.resp .stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0;
+}
+
+.resp .stack button {
+  width: 100%;
+  padding: 0.85rem;
+}
+
+.resp-foot {
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+.resp-done {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: var(--green);
+}

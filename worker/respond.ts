@@ -5,6 +5,7 @@ import { json, sha256Hex } from './util'
 const OPEN_STATUSES = ['new', 'follow_up_scheduled', 'contacted', 'customer_interested', 'appointment_requested']
 
 const TYPE_TO_STATUS: Record<string, string> = {
+  approve: 'approved',
   callback: 'customer_interested',
   appointment: 'appointment_requested',
   interested: 'customer_interested',
@@ -13,6 +14,7 @@ const TYPE_TO_STATUS: Record<string, string> = {
 }
 
 const TYPE_LABEL: Record<string, string> = {
+  approve: 'approved the repair',
   callback: 'wants a call back',
   appointment: 'wants to schedule the repair',
   interested: 'is interested',
@@ -43,7 +45,7 @@ export async function handleRespond(request: Request, env: Env, ctx: Ctx): Promi
 
     const { data } = await db
       .from('repair_opportunities')
-      .select('description, customers(name), vehicles(year, make, model), shops(name)')
+      .select('description, estimate_amount, currency, customers(name), vehicles(year, make, model), shops(name)')
       .eq('id', t.opportunity_id)
       .eq('shop_id', t.shop_id)
       .maybeSingle()
@@ -51,6 +53,8 @@ export async function handleRespond(request: Request, env: Env, ctx: Ctx): Promi
 
     const row = data as unknown as {
       description: string
+      estimate_amount: number | null
+      currency: string
       customers: { name: string } | null
       vehicles: { year: number | null; make: string | null; model: string | null } | null
       shops: { name: string } | null
@@ -59,6 +63,8 @@ export async function handleRespond(request: Request, env: Env, ctx: Ctx): Promi
       shopName: row.shops?.name ?? '',
       customerName: row.customers?.name ?? '',
       description: row.description,
+      estimate: row.estimate_amount,
+      currency: row.currency,
       vehicle: [row.vehicles?.year, row.vehicles?.make, row.vehicles?.model].filter(Boolean).join(' '),
     })
   }
@@ -79,7 +85,7 @@ export async function handleRespond(request: Request, env: Env, ctx: Ctx): Promi
 
     const { data: opp } = await db
       .from('repair_opportunities')
-      .select('id, status, customer_id, description, customers(name)')
+      .select('id, status, customer_id, description, estimate_amount, customers(name)')
       .eq('id', t.opportunity_id)
       .eq('shop_id', t.shop_id)
       .maybeSingle()
@@ -89,6 +95,7 @@ export async function handleRespond(request: Request, env: Env, ctx: Ctx): Promi
       status: string
       customer_id: string
       description: string
+      estimate_amount: number | null
       customers: { name: string } | null
     }
 
@@ -105,11 +112,12 @@ export async function handleRespond(request: Request, env: Env, ctx: Ctx): Promi
     }
 
     if (OPEN_STATUSES.includes(o.status)) {
-      await db
-        .from('repair_opportunities')
-        .update({ status: TYPE_TO_STATUS[type] })
-        .eq('id', o.id)
-        .eq('shop_id', t.shop_id)
+      const values: Record<string, unknown> = { status: TYPE_TO_STATUS[type] }
+      if (type === 'approve' && o.estimate_amount != null) {
+        values.approved_amount = o.estimate_amount
+        values.approved_at = new Date().toISOString()
+      }
+      await db.from('repair_opportunities').update(values).eq('id', o.id).eq('shop_id', t.shop_id)
     }
 
     if (type === 'opt_out') {

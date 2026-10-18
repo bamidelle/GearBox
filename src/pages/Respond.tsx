@@ -1,8 +1,32 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { Icon } from '../components/Icons'
+import { money } from '../lib/types'
+import '../respond.css'
 
-type Info = { shopName: string; customerName: string; description: string; vehicle: string }
-type ResponseType = 'appointment' | 'callback' | 'interested' | 'not_now' | 'opt_out'
+type Info = {
+  shopName: string
+  customerName: string
+  description: string
+  vehicle: string
+  estimate: number | null
+  currency: string
+}
+type ResponseType = 'approve' | 'appointment' | 'callback' | 'not_now' | 'opt_out'
+
+function Shell({ shopName, children }: { shopName: string; children: React.ReactNode }) {
+  return (
+    <div className="resp">
+      <div className="resp-head">
+        <span className="logo-mark">
+          <Icon name="settings" size={18} />
+        </span>
+        {shopName || 'GearBox'}
+      </div>
+      <div className="resp-body">{children}</div>
+    </div>
+  )
+}
 
 export default function Respond() {
   const { token = '' } = useParams()
@@ -46,56 +70,76 @@ export default function Respond() {
 
   if (state === 'invalid')
     return (
-      <main className="card">
+      <Shell shopName="">
         <h1>Link expired</h1>
         <p className="muted">This link is no longer valid. Please contact the shop directly.</p>
-      </main>
+      </Shell>
     )
 
   if (state === 'done')
     return (
-      <main className="card">
-        <h1>Thank you</h1>
-        <p>
+      <Shell shopName={info?.shopName ?? ''}>
+        <div className="resp-done">
+          <Icon name="check" size={28} />
+        </div>
+        <h1 style={{ textAlign: 'center' }}>Thank you</h1>
+        <p style={{ textAlign: 'center' }}>
           {doneType === 'opt_out'
             ? 'You will not receive further emails about this repair.'
-            : `${info?.shopName} has your reply and will be in touch.`}
+            : doneType === 'approve'
+              ? `${info?.shopName} has your approval and will contact you to book the work.`
+              : `${info?.shopName} has your reply and will be in touch.`}
         </p>
-      </main>
+      </Shell>
     )
 
   return (
-    <main className="card">
-      <h1>{info?.shopName}</h1>
-      <p>
-        Hi {info?.customerName}, you chose to wait on this repair{info?.vehicle ? ` for your ${info.vehicle}` : ''}:
-      </p>
-      <p>
-        <strong>{info?.description}</strong>
+    <Shell shopName={info?.shopName ?? ''}>
+      <h1>Your Repair Estimate</h1>
+      <p className="muted">
+        Hi {info?.customerName}, {info?.shopName} recommended the following repair work that you previously
+        declined. Please review it and let us know how you&rsquo;d like to proceed.
       </p>
 
-      <form onSubmit={(e) => e.preventDefault()}>
+      <div className="resp-card">
+        {info?.vehicle && <strong>{info.vehicle}</strong>}
+        <div className="small" style={{ marginTop: info?.vehicle ? '0.6rem' : 0 }}>
+          Recommended repair
+        </div>
+        <div>{info?.description}</div>
+        {info?.estimate != null && <div className="resp-amount">{money(info.estimate, info.currency)}</div>}
+      </div>
+
+      <form onSubmit={(e) => e.preventDefault()} style={{ margin: 0 }}>
         <label>
           Message for the shop (optional)
           <textarea value={message} onChange={(e) => setMessage(e.target.value)} maxLength={2000} />
         </label>
         {error && <p className="error">{error}</p>}
-        <button type="button" disabled={busy} onClick={() => send('appointment')}>
-          I would like to schedule this
-        </button>
-        <button type="button" disabled={busy} onClick={() => send('callback')}>
-          Please call me
-        </button>
-        <button type="button" disabled={busy} onClick={() => send('not_now')}>
-          Not right now
-        </button>
+        <div className="stack">
+          <button type="button" disabled={busy} onClick={() => send('approve')}>
+            Approve Repair
+          </button>
+          <button type="button" className="btn-outline" disabled={busy} onClick={() => send('callback')}>
+            Request Callback
+          </button>
+          <button type="button" className="btn-outline" disabled={busy} onClick={() => send('appointment')}>
+            Schedule Appointment
+          </button>
+        </div>
       </form>
 
-      <p className="muted">
+      <p className="resp-foot">
+        No account required. This link expires in 60 days.
+        <br />
+        <button type="button" className="link" disabled={busy} onClick={() => send('not_now')}>
+          Not right now
+        </button>
+        {' \u00b7 '}
         <button type="button" className="link" disabled={busy} onClick={() => send('opt_out')}>
-          Stop emailing me about this
+          Stop emailing me
         </button>
       </p>
-    </main>
+    </Shell>
   )
 }

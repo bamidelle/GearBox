@@ -6,6 +6,7 @@ import { useAuth } from '../lib/auth'
 type Event = { id: string; at: string; text: string; detail?: string }
 
 const RESPONSE_LABELS: Record<string, string> = {
+  approve: 'Customer approved the repair',
   appointment: 'Customer asked to schedule the repair',
   callback: 'Customer asked for a call back',
   interested: 'Customer said they are interested',
